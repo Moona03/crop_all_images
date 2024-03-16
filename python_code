@@ -1,0 +1,43 @@
+import os
+import nibabel as nib
+
+input_folder = 'C:/Users/user/Desktop/Nouveau dossier/input folder'
+output_folder = 'C:/Users/user/Desktop/Nouveau dossier/output folder'
+target_shape = (90, 90, 90)
+
+def crop_nifti_image(input_file, output_file, target_shape):
+    # Load the NIFTI image
+    img = nib.load(input_file)
+    data = img.get_fdata()
+    input_shape = data.shape
+    
+    # Calculate the cropping ranges
+    x_start = (input_shape[0] - target_shape[0]) // 2
+    x_end = x_start + target_shape[0]
+    
+    y_start = (input_shape[1] - target_shape[1]) // 2
+    y_end = y_start + target_shape[1]
+    
+    z_start = (input_shape[2] - target_shape[2]) // 2
+    z_end = z_start + target_shape[2]
+    
+    # Perform cropping
+    cropped_data = data[x_start:x_end, y_start:y_end, z_start:z_end]
+    
+    # Create a new NIFTI image with the cropped data
+    cropped_img = nib.Nifti1Image(cropped_data, img.affine)
+    
+    # Save the cropped image
+    nib.save(cropped_img, output_file)
+
+# Get the list of files in the input folder
+file_list = os.listdir(input_folder)
+
+# Iterate over each file in the input folder
+for file_name in file_list:
+    # Construct the full paths of the input and output files
+    input_file = os.path.join(input_folder, file_name)
+    output_file = os.path.join(output_folder, file_name)
+    
+    # Crop the NIFTI image and save the cropped image to the output folder
+    crop_nifti_image(input_file, output_file, target_shape)
